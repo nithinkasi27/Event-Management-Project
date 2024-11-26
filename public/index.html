@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Welcome</title>
+    <style>
+        /* Base styles for the text */
+        h1, h2, p {
+            font-family: cursive;
+            color: black;
+            display: block;
+            margin: 10px auto; 
+            text-align: center; 
+        }
+
+        /* Highlight effect for headings and paragraphs */
+        h1 {
+            text-shadow: 2px 2px 4px rgba(255, 42, 0, 0.8); 
+        }
+
+        h2 {
+            text-shadow: 2px 2px 4px rgba(255, 42, 0, 0.8) 
+        }
+
+        p {
+            text-shadow: 1px 1px 2px rgba(255, 42, 0, 0.8); 
+        }
+        
+
+        /* General body and background styling */
+        body {
+            background-image: url('images/15.jpg');
+            background-repeat: no-repeat;
+            background-size: cover;
+            background-attachment: fixed;
+            font-family: Arial, sans-serif;
+            height: 100vh;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            text-align: center;
+            flex-direction: column;
+            position: relative; /* To accommodate the fixed header */
+        }
+
+        .header {
+            background-color: rgba(188, 143, 143, 0.372);
+            color: white;
+            padding: 15px 0;
+            position: fixed;
+            width: 100%;
+            top: 0;
+            left: 0;
+            z-index: 1000;
+            text-align: center;
+        }
+
+        .header a {
+            text-decoration: none;
+            color: white;
+            font-size: 18px;
+            margin: 0 10px;
+        }
+
+        .header a:hover {
+            text-decoration: underline;
+        }
+
+        main {
+            margin-top: 80px; /* Space for fixed header */
+        }
+
+        button {
+            background-color: burlywood;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            font-size: 16px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 10px;
+            transition: background-color 0.3s;
+        }
+
+        button:hover {
+            background-color: burlywood;
+        }
+
+        .letsgetstarted-button {
+            background-color: lightcoral;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            font-size: 18px;
+            border-radius: 8px;
+            cursor: pointer;
+            margin: 20px;
+            transition: background-color 0.3s;
+        }
+
+        .letsgetstarted-button:hover {
+            background-color: darkgray; /* Darker green on hover */
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <a href="about.html">About Us</a>
+    </div>
+    <main>
+        <h1>One Step</h1>
+        <h2>Event Planner</h2>
+        <p>We are excited to help you make your event a memorable one.</p>
+        <a href="Customer registration.html"><button class="letsgetstarted-button">Lets get Started</button></a>
+    </main>
+</body>
+</html>

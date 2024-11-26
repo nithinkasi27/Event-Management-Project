@@ -1,0 +1,101 @@
+---
+- name: Deploy Node.js application and MongoDB to Kubernetes
+  hosts: k8s_cluster
+  become: yes
+  vars:
+    app_name: myapp
+    deployment_file: /opt/k8s-deployment/deployment.yaml
+    docker_image_name: keerthid20/event:latest
+    mongo_image_name: mongo:latest
+
+  tasks:
+
+    - name: Install necessary packages for Kubernetes and Docker
+      apt:
+        name: 
+          - apt-transport-https
+          - ca-certificates
+          - curl
+          - software-properties-common
+        state: present
+        update_cache: yes
+      when: ansible_os_family == "Debian"
+
+    - name: Add Docker’s official GPG key
+      apt_key:
+        url: https://download.docker.com/linux/ubuntu/gpg
+        state: present
+
+    - name: Set up Docker repository
+      apt_repository:
+        repo: "deb [arch=amd64] https://download.docker.com/linux/ubuntu focal stable"
+        state: present
+
+    - name: Install Docker
+      apt:
+        name: docker-ce
+        state: present
+
+    - name: Start and enable Docker
+      systemd:
+        name: docker
+        enabled: yes
+        state: started
+
+    - name: Add Kubernetes repository
+      apt_repository:
+        repo: deb http://apt.kubernetes.io/ kubernetes-xenial main
+        state: present
+
+    - name: Install Kubernetes tools
+      apt:
+        name: ['kubelet', 'kubeadm', 'kubectl']
+        state: present
+
+    - name: Start and enable kubelet service
+      systemd:
+        name: kubelet
+        enabled: yes
+        state: started
+
+    - name: Pull Docker image for Node.js application
+      docker_image:
+        name: "{{ docker_image_name }}"
+        source: pull
+
+    - name: Pull Docker image for MongoDB
+      docker_image:
+        name: "{{ mongo_image_name }}"
+        source: pull
+
+    - name: Create directory for Kubernetes deployment files
+      file:
+        path: /opt/k8s-deployment
+        state: directory
+        mode: '0755'
+
+    - name: Copy Kubernetes deployment file
+      copy:
+        src: /local/path/to/deployment.yaml
+        dest: /opt/k8s-deployment/deployment.yaml
+        mode: '0644'
+
+    - name: Apply Kubernetes deployment
+      command: kubectl apply -f {{ deployment_file }}
+
+    - name: Wait for the deployment to be ready
+      command: kubectl rollout status deployment/capsule-web-deployment
+      register: rollout_status
+      until: rollout_status.stdout.find("successfully rolled out") != -1
+      retries: 5
+      delay: 10
+
+    - name: Verify the Node.js service is running
+      command: kubectl get svc node-svc
+      register: node_svc
+      failed_when: "'node-svc' not in node_svc.stdout"
+
+    - name: Verify the MongoDB service is running
+      command: kubectl get svc mongo-service
+      register: mongo_svc
+      failed_when: "'mongo-service' not in mongo_svc.stdout"
