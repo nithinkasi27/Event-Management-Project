@@ -1,6 +1,45 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
+  name: mongodb
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: mongodb
+  template:
+    metadata:
+      labels:
+        app: mongodb
+    spec:
+      containers:
+      - name: mongodb
+        image: mongo:7-jammy
+        ports:
+        - containerPort: 27017
+        volumeMounts:
+        - name: mongodb-storage
+          mountPath: /data/db
+      volumes:
+      - name: mongodb-storage
+        emptyDir: {}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: mongodb-service
+spec:
+  selector:
+    app: mongodb
+  ports:
+  - port: 27017
+    targetPort: 27017
+  type: ClusterIP
+ 
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
   name: event-management-app
 spec:
   replicas: 2
@@ -28,8 +67,6 @@ spec:
           value: "0.0.0.0"
         - name: NODE_ENV
           value: "production"
- 
-        # Datadog APM (tracing) env variables
         - name: DD_AGENT_HOST
           valueFrom:
             fieldRef:
@@ -42,7 +79,6 @@ spec:
           value: "event-management-app"
         - name: DD_VERSION
           value: "1.0.0"
- 
 ---
 apiVersion: v1
 kind: Service
