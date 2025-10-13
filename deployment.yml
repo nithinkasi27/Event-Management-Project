@@ -1,0 +1,57 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: event-management-app
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: event-management-app
+  template:
+    metadata:
+      labels:
+        app: event-management-app
+      annotations:
+        ad.datadoghq.com/event-management-app.logs: '[{"source":"nodejs","service":"event-management-service"},{"source":"nodejs","service":"event-management-app"}]'
+    spec:
+      containers:
+      - name: event-management-app
+        image: nithin2711/cap-event:latest
+        ports:
+        - containerPort: 3003
+        env:
+        - name: MONGODB_URI
+          value: "mongodb://mongodb-service:27017/event-management"
+        - name: PORT
+          value: "3003"
+        - name: HOST
+          value: "0.0.0.0"
+        - name: NODE_ENV
+          value: "production"
+ 
+        # Datadog APM (tracing) env variables
+        - name: DD_AGENT_HOST
+          valueFrom:
+            fieldRef:
+              fieldPath: status.hostIP
+        - name: DD_TRACE_AGENT_PORT
+          value: "8126"
+        - name: DD_ENV
+          value: "production"
+        - name: DD_SERVICE
+          value: "event-management-app"
+        - name: DD_VERSION
+          value: "1.0.0"
+ 
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: event-management-service
+spec:
+  selector:
+    app: event-management-app
+  ports:
+  - port: 80
+    targetPort: 3003
+  type: LoadBalancer
