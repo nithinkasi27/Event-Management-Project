@@ -7,23 +7,13 @@ phases:
     commands:
       - echo Installing dependencies...
       - npm install
-  pre_build:
-    commands:
-      - echo Pre-build checks...
-      - npm run lint || echo "Linting skipped or failed"
   build:
     commands:
-      - echo Building the app...
-      - npm run build || echo "No build script defined"
+      - echo Build completed. No build step needed for Node.js
   post_build:
     commands:
-      - echo Build completed. Preparing artifacts...
-
+      - echo Build completed on `date`
 artifacts:
   files:
     - '**/*'
   discard-paths: no
-
-env:
-  variables:
-    NODE_ENV: production
